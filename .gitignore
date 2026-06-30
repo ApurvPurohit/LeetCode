@@ -1,0 +1,17 @@
+# Build artifacts
+*.o
+*.out
+*.exe
+*.dSYM/
+
+# IDE
+.vscode/
+!.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+*.log
