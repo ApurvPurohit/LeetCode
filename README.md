@@ -7,7 +7,6 @@ I got tired of the context-switching overhead between browser, IDE, and git whil
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)]()
 [![Language](https://img.shields.io/badge/lang-C++-f34b7d.svg)]()
-[![skhd](https://img.shields.io/badge/hotkey-skhd-green.svg)](https://github.com/koekeishiya/skhd)
 
 </div>
 
