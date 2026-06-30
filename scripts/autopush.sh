@@ -1,9 +1,9 @@
 #!/bin/bash
-# Auto-commit and push LeetCode solutions on file change
-# Polls every 15 seconds — only commits if files are stable
+# Watches for accepted solutions and pushes them to GitHub.
+# Only commits when the .accepted marker is present (written by the extension on AC).
 
 REPO="/Volumes/workplace/LeetCode"
-INTERVAL=15
+INTERVAL=10
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 
 cd "$REPO" || exit 1
@@ -11,19 +11,20 @@ cd "$REPO" || exit 1
 while true; do
     sleep "$INTERVAL"
 
-    # Check if there are uncommitted changes
-    git -C "$REPO" diff --quiet && git -C "$REPO" diff --cached --quiet && \
-    [ -z "$(git -C "$REPO" ls-files --others --exclude-standard)" ] && continue
+    # Only proceed if the extension wrote the .accepted marker
+    [ -f "$REPO/.accepted" ] || continue
 
-    # Wait one more interval to confirm stable (not mid-edit)
-    sleep "$INTERVAL"
+    # Remove the marker immediately so we don't double-commit
+    rm -f "$REPO/.accepted"
 
-    cd "$REPO" || continue
-    git add -A
-    git diff --cached --quiet && continue
+    # Small delay in case the file is still being written
+    sleep 2
 
-    MSG=$(git diff --cached --name-only | grep '\.cpp$' | sed 's|.*/||;s|\.cpp$||' | paste -sd ', ' -)
+    git -C "$REPO" add -A
+    git -C "$REPO" diff --cached --quiet && continue
+
+    MSG=$(git -C "$REPO" diff --cached --name-only | grep '\.cpp$' | sed 's|.*/||;s|\.cpp$||' | paste -sd ', ' -)
     [ -z "$MSG" ] && MSG="update"
-    git commit -m "solve: $MSG"
-    git push
+    git -C "$REPO" commit -m "solve: $MSG"
+    git -C "$REPO" push
 done

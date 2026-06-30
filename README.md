@@ -2,7 +2,7 @@
 
 # leet-sync
 
-An automated LeetCode workflow for macOS that handles the repetitive parts of competitive programming practice — fetching problems, organizing files, and syncing solutions to GitHub — so I can focus on solving.
+I got tired of the context-switching overhead between Chrome, VS Code, and git while grinding LeetCode. So I built this — a set of scripts and services that wire everything together. One hotkey fetches the problem I'm looking at in Chrome, drops the C++ template into the right folder, opens it in VS Code, and pushes to GitHub when I get an AC. Nothing else to think about.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)]()
@@ -20,7 +20,7 @@ One hotkey (`Cmd+Shift+L`) from any LeetCode problem page in Chrome:
 2. Creates the solution file at the correct path with proper extension markers
 3. Opens it in VS Code, ready to code
 
-After submission, a background daemon commits and pushes the solution here automatically.
+When a submission gets accepted, a background daemon picks it up and pushes it here. Wrong answers and TLEs don't get committed.
 
 ---
 
@@ -60,7 +60,7 @@ flowchart TD
     D -- "problem metadata + code template" --> C
     C -- "creates file, opens editor" --> E
     E --> F
-    F -- "file written" --> G
+    F -- "Accepted → .accepted marker" --> G
     G -- "git add, commit, push" --> H
 ```
 
@@ -73,7 +73,7 @@ leet-sync/
 ├── scripts/
 │   ├── setup.sh               — one-command install and configuration
 │   ├── leetcode-open.sh       — Chrome → LeetCode API → VS Code bridge
-│   └── autopush.sh            — background daemon: poll, commit, push
+│   └── autopush.sh            — background daemon: commit + push on accepted
 │
 ├── config/
 │   ├── vscode/settings.json   — editor settings (no autocomplete, no diagnostics)
@@ -171,7 +171,7 @@ Two macOS Launch Agents run in the background. Both start on login and restart i
 | Service | Purpose |
 |---------|---------|
 | `com.koekeishiya.skhd` | Listens for the global hotkey |
-| `com.leetcode.autopush` | Watches for file changes, waits for stability (30s), commits and pushes |
+| `com.leetcode.autopush` | Commits and pushes only when a solution is accepted |
 
 ```bash
 # status
